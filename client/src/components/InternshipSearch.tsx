@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,30 +55,46 @@ const InternshipSearch = () => {
   const [remoteFilter, setRemoteFilter] = useState<boolean | undefined>(undefined);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Fetch internships
-  const fetchInternships = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (searchTerm) params.append('search', searchTerm);
-      if (locationFilter) params.append('location', locationFilter);
-      if (remoteFilter !== undefined) params.append('remote', remoteFilter.toString());
+  // Debounced fetch function
+  const debouncedFetch = useCallback(
+    debounce(async (search: string, location: string, remote: boolean | undefined) => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (location) params.append('location', location);
+        if (remote !== undefined) params.append('remote', remote.toString());
 
-      const response = await fetch(`/api/internships?${params.toString()}`);
-      if (response.ok) {
-        const data = await response.json();
-        setInternships(data);
+        const response = await fetch(`/api/internships?${params.toString()}`);
+        if (response.ok) {
+          const data = await response.json();
+          setInternships(data);
+        }
+      } catch (error) {
+        console.error('Error fetching internships:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching internships:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    }, 500),
+    []
+  );
 
   useEffect(() => {
-    fetchInternships();
-  }, [searchTerm, locationFilter, remoteFilter]);
+    debouncedFetch(searchTerm, locationFilter, remoteFilter);
+  }, [searchTerm, locationFilter, remoteFilter, debouncedFetch]);
+
+  // Debounce utility
+  function debounce(func: Function, wait: number) {
+    let timeout: NodeJS.Timeout;
+    return function executedFunction(...args: any[]) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
 
   const formatStipend = (stipend: string | null) => {
     if (!stipend) return 'Unpaid';
