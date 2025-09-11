@@ -1,6 +1,7 @@
 import Navigation from "./components/Navigation";
 import Hero from "./components/Hero";
 import Features from "./components/Features";
+import InternshipSearch from "./components/InternshipSearch.tsx";
 import CallToAction from "./components/CallToAction";
 import Footer from "./components/Footer";
 import AdvancedScene from "./components/3d/AdvancedScene.tsx";
@@ -38,6 +39,7 @@ function App() {
         <Navigation />
         <Hero />
         <Features />
+        <InternshipSearch />
         <CallToAction />
         <Footer />
       </div>
