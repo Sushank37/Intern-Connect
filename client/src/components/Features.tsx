@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import ParticleSystem from "./3d/ParticleSystem.tsx";
 import SafeCanvas from "./3d/SafeCanvas.tsx";
+import { SectionTransition, CardHover, TextReveal, StaggerContainer, StaggerItem } from "./PageTransition.tsx";
 
 const Features = () => {
   const features = [
@@ -103,26 +104,29 @@ const Features = () => {
         </div>
 
         {/* Main Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-          {features.map((feature, index) => (
-            <Card
-              key={index}
-              className="bg-white/10 backdrop-blur-sm border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 hover:scale-105 group"
-            >
-              <CardContent className="p-8">
-                <div className={`w-16 h-16 rounded-xl bg-gradient-to-r ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <feature.icon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
-                  {feature.description}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <StaggerContainer>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+            {features.map((feature, index) => (
+              <StaggerItem key={index}>
+                <CardHover>
+                  <Card className="bg-white/10 backdrop-blur-sm border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 group h-full">
+                    <CardContent className="p-8">
+                      <div className={`w-16 h-16 rounded-xl bg-gradient-to-r ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                        <feature.icon className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
+                        {feature.title}
+                      </h3>
+                      <p className="text-gray-300 leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </CardHover>
+              </StaggerItem>
+            ))}
+          </div>
+        </StaggerContainer>
 
         {/* Benefits Section */}
         <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-8 md:p-12">
