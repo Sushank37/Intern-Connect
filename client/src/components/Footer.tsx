@@ -6,24 +6,27 @@ const Footer = () => {
       { name: "Features", href: "#features" },
       { name: "Pricing", href: "#pricing" },
       { name: "Success Stories", href: "#stories" },
-      { name: "Resources", href: "#resources" }
+      { name: "Resources", href: "#resources" },
     ],
     company: [
       { name: "About Us", href: "#about" },
       { name: "Careers", href: "#careers" },
       { name: "Contact", href: "#contact" },
-      { name: "Blog", href: "#blog" }
+      { name: "Blog", href: "#blog" },
     ],
     support: [
       { name: "Help Center", href: "#help" },
       { name: "Community", href: "#community" },
       { name: "Privacy Policy", href: "#privacy" },
-      { name: "Terms of Service", href: "#terms" }
-    ]
+      { name: "Terms of Service", href: "#terms" },
+    ],
   };
 
   return (
-    <footer id="contact" className="relative bg-slate-900/80 backdrop-blur-sm border-t border-purple-500/20">
+    <footer
+      id="contact"
+      className="relative bg-slate-900/80 backdrop-blur-sm border-t border-purple-500/20"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Section */}
@@ -32,10 +35,10 @@ const Footer = () => {
               PM Internship Hub
             </h3>
             <p className="text-gray-300 mb-6 max-w-md">
-              Empowering the next generation of product managers through 
+              Empowering the next generation of product managers through
               meaningful internship opportunities and career development.
             </p>
-            
+
             {/* Social Links */}
             <div className="flex space-x-4">
               <a
@@ -121,10 +124,11 @@ const Footer = () => {
         <div className="border-t border-purple-500/20 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm mb-4 md:mb-0">
-              © 2024 PM Internship Hub. All rights reserved.
+              © Team Git Commit. All rights reserved.
             </p>
             <p className="text-gray-400 text-sm flex items-center">
-              Made with <Heart className="w-4 h-4 text-red-500 mx-1" /> for future product managers
+              Made with <Heart className="w-4 h-4 text-red-500 mx-1" /> from
+              team Git Commit.
             </p>
           </div>
         </div>
