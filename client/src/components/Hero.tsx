@@ -3,8 +3,11 @@ import { ArrowRight, Star, Users, Briefcase } from "lucide-react";
 import AdvancedScene from "./3d/AdvancedScene.tsx";
 import SafeCanvas from "./3d/SafeCanvas.tsx";
 import { SectionTransition, ButtonHover, TextReveal, StaggerContainer, StaggerItem } from "./PageTransition.tsx";
+import { useWizard } from "@/contexts/WizardContext";
 
 const Hero = () => {
+  const { openWizard } = useWizard();
+
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* 3D Interactive Objects */}
@@ -98,12 +101,7 @@ const Hero = () => {
               <ButtonHover>
                 <Button
                   size="lg"
-                  onClick={() => {
-                    const element = document.getElementById("about");
-                    if (element) {
-                      element.scrollIntoView({ behavior: "smooth" });
-                    }
-                  }}
+                  onClick={openWizard}
                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 text-lg px-8 rounded-xl transition-all duration-300"
                 >
                   Find Internships

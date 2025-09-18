@@ -3,8 +3,11 @@ import { Canvas } from "@react-three/fiber";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, CheckCircle } from "lucide-react";
 import InteractiveButton from "./3d/InteractiveButton.tsx";
+import { useWizard } from "@/contexts/WizardContext";
 
 const CallToAction = () => {
+  const { openWizard } = useWizard();
+  
   const benefits = [
     "Access to 500+ verified internship opportunities",
     "Personalized career guidance and mentorship",
@@ -67,12 +70,7 @@ const CallToAction = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Button
               size="lg"
-              onClick={() => {
-                const element = document.getElementById("about");
-                if (element) {
-                  element.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
+              onClick={openWizard}
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 text-xl px-10 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-2xl animate-pulse-glow"
             >
               Start Your Journey Now

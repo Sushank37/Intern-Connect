@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import { useWizard } from "@/contexts/WizardContext";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { openWizard } = useWizard();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -67,12 +69,7 @@ const Navigation = () => {
               Contact
             </button>
             <Button 
-              onClick={() => {
-                const element = document.getElementById("about");
-                if (element) {
-                  element.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
+              onClick={openWizard}
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0"
             >
               Get Started
@@ -122,10 +119,7 @@ const Navigation = () => {
               </button>
               <Button 
                 onClick={() => {
-                  const element = document.getElementById("about");
-                  if (element) {
-                    element.scrollIntoView({ behavior: "smooth" });
-                  }
+                  openWizard();
                   setIsMobileMenuOpen(false);
                 }}
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 mt-4"
