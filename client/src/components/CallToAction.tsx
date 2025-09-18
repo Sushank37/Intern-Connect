@@ -14,7 +14,7 @@ const CallToAction = () => {
   ];
 
   return (
-    <section id="cta" className="relative py-20 overflow-hidden">
+    <section className="relative py-20 overflow-hidden">
       {/* Gradient Background */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-900/50 via-pink-900/30 to-purple-900/50 backdrop-blur-sm"></div>
       
@@ -67,6 +67,12 @@ const CallToAction = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Button
               size="lg"
+              onClick={() => {
+                const element = document.getElementById("about");
+                if (element) {
+                  element.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 text-xl px-10 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-2xl animate-pulse-glow"
             >
               Start Your Journey Now

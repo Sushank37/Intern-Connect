@@ -112,7 +112,7 @@ const InternshipSearch = () => {
   };
 
   return (
-    <section id="search" className="py-20 bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900">
+    <section id="about" className="py-20 bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900">
       <SectionTransition className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Search Header */}
         <div className="text-center mb-12">
@@ -278,6 +278,15 @@ const InternshipSearch = () => {
                             </div>
                             <Button
                               size="sm"
+                              onClick={() => {
+                                // Open application in new tab or show application modal
+                                console.log(`Applying to ${internship.title} at ${internship.company.name}`);
+                                if (internship.company.website) {
+                                  window.open(internship.company.website, '_blank');
+                                } else {
+                                  alert(`Applying to ${internship.title} at ${internship.company.name}. This would typically open an application form or redirect to the company's careers page.`);
+                                }
+                              }}
                               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
                             >
                               Apply Now

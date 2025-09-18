@@ -98,6 +98,12 @@ const Hero = () => {
               <ButtonHover>
                 <Button
                   size="lg"
+                  onClick={() => {
+                    const element = document.getElementById("about");
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 text-lg px-8 rounded-xl transition-all duration-300"
                 >
                   Find Internships
@@ -108,6 +114,12 @@ const Hero = () => {
                 <Button
                   size="lg"
                   variant="outline"
+                  onClick={() => {
+                    const element = document.getElementById("features");
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
                   className="bg-transparent border-2 border-purple-500 text-purple-300 hover:bg-purple-500/20 hover:text-white text-lg px-8 rounded-xl transition-all duration-300"
                 >
                   Learn More

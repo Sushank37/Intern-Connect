@@ -66,7 +66,15 @@ const Navigation = () => {
             >
               Contact
             </button>
-            <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0">
+            <Button 
+              onClick={() => {
+                const element = document.getElementById("about");
+                if (element) {
+                  element.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0"
+            >
               Get Started
             </Button>
           </div>
@@ -112,7 +120,16 @@ const Navigation = () => {
               >
                 Contact
               </button>
-              <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 mt-4">
+              <Button 
+                onClick={() => {
+                  const element = document.getElementById("about");
+                  if (element) {
+                    element.scrollIntoView({ behavior: "smooth" });
+                  }
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 mt-4"
+              >
                 Get Started
               </Button>
             </div>
