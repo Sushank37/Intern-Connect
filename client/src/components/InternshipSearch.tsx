@@ -100,7 +100,7 @@ const InternshipSearch = () => {
   const formatStipend = (stipend: string | null) => {
     if (!stipend) return 'Unpaid';
     const amount = parseFloat(stipend);
-    return `$${amount.toLocaleString()}/month`;
+    return `₹${amount.toLocaleString()}/month`;
   };
 
   const formatDate = (date: Date | null) => {
