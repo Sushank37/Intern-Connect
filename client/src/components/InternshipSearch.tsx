@@ -68,7 +68,8 @@ const InternshipSearch = () => {
         const response = await fetch(`/api/internships?${params.toString()}`);
         if (response.ok) {
           const data = await response.json();
-          setInternships(data);
+          // Limit to 8 internships for the home page display
+          setInternships(data.slice(0, 8));
         }
       } catch (error) {
         console.error('Error fetching internships:', error);
@@ -207,7 +208,8 @@ const InternshipSearch = () => {
           <StaggerContainer>
             <div className="mb-6">
               <p className="text-gray-400">
-                Found {internships.length} internship{internships.length !== 1 ? 's' : ''}
+                Showing {internships.length} featured internship{internships.length !== 1 ? 's' : ''}
+                {internships.length === 8 && <span className="ml-2 text-purple-400">• Use "Find Internships" for personalized matches</span>}
               </p>
             </div>
 
