@@ -119,17 +119,25 @@ const RecommendationsStep: React.FC<RecommendationsStepProps> = ({
   const calculateSkillsMatch = (internship: Internship, userSkills: string[]): number => {
     if (!userSkills.length) return 0;
 
+    // Tokenize internship text for better matching
     const internshipText = `${internship.title} ${internship.description} ${internship.requirements || ''}`.toLowerCase();
-    const normalizedUserSkills = userSkills.map(skill => skill.toLowerCase());
+    const internshipTokens = new Set(
+      internshipText.split(/\s+/).filter(token => token.length > 2) // Remove short words
+    );
     
-    let matches = 0;
-    normalizedUserSkills.forEach(skill => {
-      if (internshipText.includes(skill)) {
-        matches++;
-      }
-    });
-
-    return matches / normalizedUserSkills.length;
+    const normalizedUserSkills = new Set(userSkills.map(skill => skill.toLowerCase()));
+    
+    // Calculate Jaccard similarity: |A ∩ B| / |A ∪ B|
+    const intersection = new Set(Array.from(normalizedUserSkills).filter(skill => 
+      Array.from(internshipTokens).some(token => token.includes(skill) || skill.includes(token))
+    ));
+    
+    const union = new Set([...Array.from(normalizedUserSkills), ...Array.from(internshipTokens)]);
+    
+    const jaccard = intersection.size / union.size;
+    console.log(`Skills match for ${internship.title}: ${jaccard.toFixed(3)} (${intersection.size}/${union.size})`);
+    
+    return jaccard;
   };
 
   const calculateSectorMatch = (internship: Internship, userSector: string): number => {
@@ -216,13 +224,20 @@ const RecommendationsStep: React.FC<RecommendationsStepProps> = ({
         const response = await fetch('/api/internships');
         if (response.ok) {
           const internships: Internship[] = await response.json();
+          console.log(`Fetched ${internships.length} total internships for recommendation matching`);
           
           // Score all internships
           const scored = internships
             .map(internship => calculateMatch(internship))
-            .sort((a, b) => b.score - a.score)
-            .slice(0, 5); // Top 5 recommendations
+            // Deterministic sorting: score desc, then postedAt desc, then id asc
+            .sort((a, b) => {
+              if (b.score !== a.score) return b.score - a.score;
+              if (b.postedAt !== a.postedAt) return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
+              return a.id - b.id;
+            })
+            .slice(0, 5); // Enforce top 3-5 recommendations
 
+          console.log('Top recommendations:', scored.map(s => `${s.title} (${(s.score * 100).toFixed(1)}%)`));
           setRecommendations(scored);
         }
       } catch (error) {
