@@ -37,6 +37,7 @@ interface Internship {
   remote: boolean | null;
   duration: string | null;
   stipend: string | null;
+  skills: string | null; // JSON array of required skills
   applicationDeadline: Date | null;
   startDate: Date | null;
   isActive: boolean | null;
@@ -119,23 +120,38 @@ const RecommendationsStep: React.FC<RecommendationsStepProps> = ({
   const calculateSkillsMatch = (internship: Internship, userSkills: string[]): number => {
     if (!userSkills.length) return 0;
 
-    // Tokenize internship text for better matching
-    const internshipText = `${internship.title} ${internship.description} ${internship.requirements || ''}`.toLowerCase();
-    const internshipTokens = new Set(
-      internshipText.split(/\s+/).filter(token => token.length > 2) // Remove short words
-    );
+    // Parse internship skills from JSON
+    let internshipSkills: string[] = [];
+    try {
+      if (internship.skills) {
+        internshipSkills = JSON.parse(internship.skills);
+      }
+    } catch (error) {
+      // Fallback to text parsing if JSON parsing fails
+      const internshipText = `${internship.title} ${internship.description} ${internship.requirements || ''}`.toLowerCase();
+      internshipSkills = internshipText.split(/\s+/).filter(token => token.length > 2);
+    }
+
+    if (!internshipSkills.length) return 0;
     
     const normalizedUserSkills = new Set(userSkills.map(skill => skill.toLowerCase()));
+    const normalizedInternshipSkills = new Set(internshipSkills.map(skill => skill.toLowerCase()));
     
     // Calculate Jaccard similarity: |A ∩ B| / |A ∪ B|
-    const intersection = new Set(Array.from(normalizedUserSkills).filter(skill => 
-      Array.from(internshipTokens).some(token => token.includes(skill) || skill.includes(token))
+    const intersection = new Set(Array.from(normalizedUserSkills).filter(userSkill => 
+      Array.from(normalizedInternshipSkills).some(internshipSkill => 
+        internshipSkill.includes(userSkill) || userSkill.includes(internshipSkill) ||
+        userSkill === internshipSkill
+      )
     ));
     
-    const union = new Set([...Array.from(normalizedUserSkills), ...Array.from(internshipTokens)]);
+    const union = new Set([...Array.from(normalizedUserSkills), ...Array.from(normalizedInternshipSkills)]);
     
     const jaccard = intersection.size / union.size;
     console.log(`Skills match for ${internship.title}: ${jaccard.toFixed(3)} (${intersection.size}/${union.size})`);
+    console.log(`  User skills: [${userSkills.join(', ')}]`);
+    console.log(`  Internship skills: [${internshipSkills.join(', ')}]`);
+    console.log(`  Intersection: [${Array.from(intersection).join(', ')}]`);
     
     return jaccard;
   };

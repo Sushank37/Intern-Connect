@@ -35,6 +35,7 @@ export const internships = pgTable("internships", {
   remote: boolean("remote").default(false),
   duration: text("duration"), // "3 months", "6 months", etc.
   stipend: numeric("stipend", { precision: 10, scale: 2 }),
+  skills: text("skills"), // JSON array of required skills
   applicationDeadline: timestamp("application_deadline"),
   startDate: timestamp("start_date"),
   isActive: boolean("is_active").default(true),
@@ -85,6 +86,7 @@ export const insertInternshipSchema = createInsertSchema(internships, {
   remote: true,
   duration: true,
   stipend: true,
+  skills: true,
   applicationDeadline: true,
   startDate: true,
 });
