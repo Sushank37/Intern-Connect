@@ -102,13 +102,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Internship routes
   app.get("/api/internships", async (req, res) => {
     try {
-      const { search, location, remote, company_id } = req.query;
+      const { search, location, remote, company_id, limit } = req.query;
       
       const filters: any = {};
       if (search) filters.search = search as string;
       if (location) filters.location = location as string;
       if (remote !== undefined) filters.remote = remote === 'true';
       if (company_id) filters.companyId = parseInt(company_id as string);
+      if (limit) filters.limit = parseInt(limit as string);
 
       const internships = await storage.getInternships(filters);
       res.json(internships);

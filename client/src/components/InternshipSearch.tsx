@@ -65,11 +65,16 @@ const InternshipSearch = () => {
         if (search) params.append('search', search);
         if (location) params.append('location', location);
         if (remote !== undefined) params.append('remote', remote.toString());
+        
+        // If no search/filter is active, limit to best 8 for homepage
+        const isHomepageView = !search && !location && remote === undefined;
+        if (isHomepageView) {
+          params.append('limit', '8');
+        }
 
         const response = await fetch(`/api/internships?${params.toString()}`);
         if (response.ok) {
           const data = await response.json();
-          // Show all internships so users can see all companies
           setInternships(data);
         }
       } catch (error) {

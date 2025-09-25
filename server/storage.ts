@@ -101,6 +101,7 @@ export class DatabaseStorage implements IStorage {
     location?: string;
     remote?: boolean;
     companyId?: number;
+    limit?: number;
   }): Promise<InternshipWithCompany[]> {
     // Build where conditions
     const conditions = [eq(internships.isActive, true)];
@@ -121,7 +122,7 @@ export class DatabaseStorage implements IStorage {
       conditions.push(eq(internships.companyId, filters.companyId));
     }
 
-    const results = await db
+    const baseQuery = db
       .select({
         id: internships.id,
         companyId: internships.companyId,
@@ -145,6 +146,11 @@ export class DatabaseStorage implements IStorage {
       .leftJoin(companies, eq(internships.companyId, companies.id))
       .where(and(...conditions))
       .orderBy(desc(internships.postedAt));
+
+    // Apply limit if specified (for homepage view)
+    const results = filters?.limit 
+      ? await baseQuery.limit(filters.limit)
+      : await baseQuery;
     
     return results.map(result => ({
       ...result,
