@@ -327,7 +327,7 @@ const RecommendationsStep: React.FC<RecommendationsStepProps> = ({
               if (b.postedAt !== a.postedAt) return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
               return a.id - b.id;
             })
-            .slice(0, 5); // Enforce top 3-5 recommendations
+            .slice(0, 12); // Show more recommendations to display more companies
 
           console.log('Top recommendations:', scored.map(s => `${s.title} (${(s.score * 100).toFixed(1)}%)`));
           setRecommendations(scored);
