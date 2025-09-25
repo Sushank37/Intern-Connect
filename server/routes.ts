@@ -173,6 +173,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Database initialization endpoint (call once in production)
+  app.post("/api/init-database", async (req, res) => {
+    try {
+      console.log('🌱 Starting database initialization...');
+      
+      // Check if data already exists
+      const existingCompanies = await storage.getCompanies();
+      if (existingCompanies.length > 0) {
+        return res.json({ 
+          message: "Database already initialized", 
+          companies: existingCompanies.length,
+          status: "already_populated"
+        });
+      }
+
+      // Create all companies and internships
+      console.log('📊 Creating companies and internships...');
+      
+      // This will run a comprehensive database seeding
+      // For now, return a message indicating the endpoint is ready
+      res.json({ 
+        message: "Database initialization endpoint ready. Please run the SQL commands to populate data.",
+        status: "ready_for_sql_population",
+        instructions: "Use the SQL runner in your Replit deployment to run INSERT statements"
+      });
+
+    } catch (error) {
+      console.error("❌ Error initializing database:", error);
+      res.status(500).json({ error: "Failed to initialize database" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
