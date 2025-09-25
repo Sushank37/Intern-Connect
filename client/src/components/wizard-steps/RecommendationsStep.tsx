@@ -68,39 +68,51 @@ const RecommendationsStep: React.FC<RecommendationsStepProps> = ({
   const calculateMatch = (internship: Internship): ScoredInternship => {
     let score = 0;
     const matchReasons: string[] = [];
-    const { preferences } = wizardData;
+    const { preferences, personalDetails } = wizardData;
 
-    // Skills overlap (50% weight)
+    // Debug logging
+    console.log(`\n=== Matching ${internship.title} ===`);
+    console.log('User skills:', preferences.skills);
+    console.log('User education:', personalDetails?.educationLevel);
+
+    // Skills overlap (40% weight - reduced to make room for education)
     const skillsScore = calculateSkillsMatch(internship, preferences.skills);
-    score += skillsScore * 0.5;
-    if (skillsScore > 0.3) {
+    score += skillsScore * 0.4;
+    if (skillsScore > 0.2) {
       matchReasons.push('Matching skills found');
     }
 
-    // Sector match (15% weight)
+    // Education level match (20% weight - new criteria)
+    const educationScore = calculateEducationMatch(internship, personalDetails?.educationLevel || '');
+    score += educationScore * 0.2;
+    if (educationScore > 0.5) {
+      matchReasons.push('Education level match');
+    }
+
+    // Sector match (12% weight)
     const sectorScore = calculateSectorMatch(internship, preferences.sector);
-    score += sectorScore * 0.15;
+    score += sectorScore * 0.12;
     if (sectorScore > 0.5) {
       matchReasons.push('Industry match');
     }
 
-    // Work mode match (10% weight)
+    // Work mode match (8% weight)
     const workModeScore = calculateWorkModeMatch(internship, preferences.workMode);
-    score += workModeScore * 0.1;
+    score += workModeScore * 0.08;
     if (workModeScore > 0.5) {
       matchReasons.push('Work mode preference');
     }
 
-    // Duration match (10% weight)
+    // Duration match (8% weight)
     const durationScore = calculateDurationMatch(internship, preferences.duration);
-    score += durationScore * 0.1;
+    score += durationScore * 0.08;
     if (durationScore > 0.5) {
       matchReasons.push('Duration preference');
     }
 
-    // Internship type match (15% weight)
+    // Internship type match (12% weight)
     const typeScore = calculateTypeMatch(internship, preferences.internshipType);
-    score += typeScore * 0.15;
+    score += typeScore * 0.12;
     if (typeScore > 0.5) {
       matchReasons.push('Internship type match');
     }
@@ -110,6 +122,8 @@ const RecommendationsStep: React.FC<RecommendationsStepProps> = ({
       score += 0.05;
     }
 
+    console.log(`Total score: ${(score * 100).toFixed(1)}% (Skills: ${(skillsScore * 40).toFixed(1)}%, Education: ${(educationScore * 20).toFixed(1)}%)`);
+
     return {
       ...internship,
       score: Math.min(score, 1), // Cap at 1.0
@@ -118,24 +132,42 @@ const RecommendationsStep: React.FC<RecommendationsStepProps> = ({
   };
 
   const calculateSkillsMatch = (internship: Internship, userSkills: string[]): number => {
-    if (!userSkills.length) return 0;
+    console.log(`\n--- Skills matching for ${internship.title} ---`);
+    console.log('Raw user skills:', userSkills);
+    console.log('Raw internship skills field:', internship.skills);
+    
+    if (!userSkills.length) {
+      console.log('No user skills provided, returning 0');
+      return 0;
+    }
 
     // Parse internship skills from JSON
     let internshipSkills: string[] = [];
     try {
       if (internship.skills) {
         internshipSkills = JSON.parse(internship.skills);
+        console.log('Parsed internship skills:', internshipSkills);
+      } else {
+        console.log('No skills field in internship');
       }
     } catch (error) {
+      console.log('JSON parsing failed, using fallback:', error);
       // Fallback to text parsing if JSON parsing fails
       const internshipText = `${internship.title} ${internship.description} ${internship.requirements || ''}`.toLowerCase();
       internshipSkills = internshipText.split(/\s+/).filter(token => token.length > 2);
+      console.log('Fallback skills from text:', internshipSkills.slice(0, 10)); // Show first 10
     }
 
-    if (!internshipSkills.length) return 0;
+    if (!internshipSkills.length) {
+      console.log('No internship skills found, returning 0');
+      return 0;
+    }
     
     const normalizedUserSkills = new Set(userSkills.map(skill => skill.toLowerCase()));
     const normalizedInternshipSkills = new Set(internshipSkills.map(skill => skill.toLowerCase()));
+    
+    console.log('Normalized user skills:', Array.from(normalizedUserSkills));
+    console.log('Normalized internship skills:', Array.from(normalizedInternshipSkills));
     
     // Calculate Jaccard similarity: |A ∩ B| / |A ∪ B|
     const intersection = new Set(Array.from(normalizedUserSkills).filter(userSkill => 
@@ -148,12 +180,56 @@ const RecommendationsStep: React.FC<RecommendationsStepProps> = ({
     const union = new Set([...Array.from(normalizedUserSkills), ...Array.from(normalizedInternshipSkills)]);
     
     const jaccard = intersection.size / union.size;
-    console.log(`Skills match for ${internship.title}: ${jaccard.toFixed(3)} (${intersection.size}/${union.size})`);
-    console.log(`  User skills: [${userSkills.join(', ')}]`);
-    console.log(`  Internship skills: [${internshipSkills.join(', ')}]`);
-    console.log(`  Intersection: [${Array.from(intersection).join(', ')}]`);
+    console.log(`Skills match result: ${jaccard.toFixed(3)} (${intersection.size}/${union.size})`);
+    console.log(`Intersection skills: [${Array.from(intersection).join(', ')}]`);
     
     return jaccard;
+  };
+
+  const calculateEducationMatch = (internship: Internship, userEducation: string): number => {
+    if (!userEducation) return 0.5;
+
+    // Education level hierarchy
+    const educationLevels = {
+      'high-school': 1,
+      'bootcamp': 2,
+      'other': 2,
+      'bachelors': 3,
+      'masters': 4,
+      'phd': 5
+    };
+
+    const userLevel = educationLevels[userEducation as keyof typeof educationLevels] || 2;
+    
+    // Determine required education level based on internship title and description
+    const title = internship.title.toLowerCase();
+    const description = internship.description.toLowerCase();
+    const requirements = (internship.requirements || '').toLowerCase();
+    const text = `${title} ${description} ${requirements}`;
+
+    // Senior roles or enterprise positions typically require higher education
+    let requiredLevel = 2; // default: bootcamp/other level
+
+    if (text.includes('senior') || text.includes('lead') || text.includes('enterprise')) {
+      requiredLevel = 4; // masters level
+    } else if (text.includes('advanced') || text.includes('specialist') || text.includes('expert')) {
+      requiredLevel = 3; // bachelors level
+    } else if (text.includes('entry') || text.includes('junior') || text.includes('intern')) {
+      requiredLevel = 2; // bootcamp/certificate level
+    } else if (text.includes('research') || text.includes('phd') || text.includes('doctorate')) {
+      requiredLevel = 5; // PhD level
+    }
+
+    // Calculate match score
+    if (userLevel >= requiredLevel) {
+      // User meets or exceeds requirements - bonus for higher education
+      const bonus = Math.min((userLevel - requiredLevel) * 0.1, 0.3); // Up to 30% bonus
+      return Math.min(1.0, 0.7 + bonus);
+    } else {
+      // User doesn't meet requirements - penalty
+      const penalty = (requiredLevel - userLevel) * 0.2;
+      return Math.max(0, 0.3 - penalty);
+    }
   };
 
   const calculateSectorMatch = (internship: Internship, userSector: string): number => {
