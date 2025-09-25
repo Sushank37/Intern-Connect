@@ -54,6 +54,36 @@ const InternshipSearch = () => {
   const [locationFilter, setLocationFilter] = useState('');
   const [remoteFilter, setRemoteFilter] = useState<boolean | undefined>(undefined);
   const [showFilters, setShowFilters] = useState(false);
+  const [initializing, setInitializing] = useState(false);
+  const [initStatus, setInitStatus] = useState('');
+
+  // Initialize database function
+  const initializeDatabase = async () => {
+    setInitializing(true);
+    setInitStatus('Initializing database...');
+    try {
+      const response = await fetch('/api/init-database', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        setInitStatus(`✅ Success! Added ${result.companies} companies and ${result.internships} internships`);
+        // Refresh the internships list
+        debouncedFetch(searchTerm, locationFilter, remoteFilter);
+      } else {
+        setInitStatus(`❌ Error: ${result.error}`);
+      }
+    } catch (error) {
+      setInitStatus(`❌ Error: ${error}`);
+    } finally {
+      setInitializing(false);
+    }
+  };
 
   // Debounced fetch function
   const debouncedFetch = useCallback(
@@ -124,6 +154,28 @@ const InternshipSearch = () => {
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Search through hundreds of Product Management internships from top companies
           </p>
+
+          {/* Database Initialization Section */}
+          {(internships.length === 0 && !loading) && (
+            <div className="mt-8 p-6 bg-yellow-500/10 border border-yellow-500/30 rounded-lg max-w-2xl mx-auto">
+              <h3 className="text-lg font-semibold text-yellow-300 mb-3">No Data Found - Initialize Database</h3>
+              <p className="text-yellow-200 mb-4">
+                It looks like your production database is empty. Click the button below to add sample companies and internships.
+              </p>
+              <Button
+                onClick={initializeDatabase}
+                disabled={initializing}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white"
+              >
+                {initializing ? 'Initializing...' : 'Initialize Database'}
+              </Button>
+              {initStatus && (
+                <div className="mt-3 text-sm text-yellow-200">
+                  {initStatus}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Search Controls */}
