@@ -188,20 +188,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Create all companies and internships
-      console.log('📊 Creating companies and internships...');
-      
-      // This will run a comprehensive database seeding
-      // For now, return a message indicating the endpoint is ready
+      // Create companies first
+      console.log('📊 Creating companies...');
+      const companyData = [
+        { name: 'Tata Consultancy Services', description: 'Leading global IT services, consulting and business solutions company', website: 'https://www.tcs.com', industry: 'Information Technology', size: 'Large (10000+ employees)', logo: null, location: 'Mumbai' },
+        { name: 'Infosys', description: 'Global leader in next-generation digital services and consulting', website: 'https://www.infosys.com', industry: 'Information Technology', size: 'Large (10000+ employees)', logo: null, location: 'Bangalore' },
+        { name: 'Wipro', description: 'Leading technology services and consulting company', website: 'https://www.wipro.com', industry: 'Information Technology', size: 'Large (10000+ employees)', logo: null, location: 'Bangalore' },
+        { name: 'State Bank of India', description: 'India\'s largest public sector bank', website: 'https://www.sbi.co.in', industry: 'Banking & Financial Services', size: 'Large (10000+ employees)', logo: null, location: 'Mumbai' },
+        { name: 'HDFC Bank', description: 'Leading private sector bank in India', website: 'https://www.hdfcbank.com', industry: 'Banking & Financial Services', size: 'Large (10000+ employees)', logo: null, location: 'Mumbai' },
+        { name: 'Reliance Industries', description: 'Leading petrochemicals, oil & gas, and retail conglomerate', website: 'https://www.ril.com', industry: 'Oil & Energy', size: 'Large (10000+ employees)', logo: null, location: 'Mumbai' },
+        { name: 'Tata Motors', description: 'Leading automobile manufacturer in India', website: 'https://www.tatamotors.com', industry: 'Automotive', size: 'Large (10000+ employees)', logo: null, location: 'Mumbai' },
+        { name: 'Apollo Hospitals', description: 'Leading healthcare provider in India', website: 'https://www.apollohospitals.com', industry: 'Healthcare & Life Sciences', size: 'Large (10000+ employees)', logo: null, location: 'Chennai' },
+        { name: 'ITC Limited', description: 'Leading FMCG and consumer goods company', website: 'https://www.itcportal.com', industry: 'Retail & Consumer Goods', size: 'Large (10000+ employees)', logo: null, location: 'Kolkata' },
+        { name: 'Asian Paints', description: 'India\'s largest paint company', website: 'https://www.asianpaints.com', industry: 'Chemical', size: 'Large (10000+ employees)', logo: null, location: 'Mumbai' }
+      ];
+
+      let createdCompanies = [];
+      for (const company of companyData) {
+        const created = await storage.createCompany(company);
+        createdCompanies.push(created);
+      }
+
+      // Create internships
+      console.log('💼 Creating internships...');
+      const internshipData = [
+        { companyId: createdCompanies[0].id, title: 'Software Development Intern', description: 'Work on enterprise software solutions, learn modern development practices, and contribute to real client projects.', requirements: 'Computer Science/IT students. Programming knowledge in Java, Python, or JavaScript preferred.', benefits: 'Industry exposure, mentorship program, potential full-time offer', location: 'Mumbai', remote: true, duration: '6 months', stipend: '25000', skills: '["Software Development", "Java", "Python", "JavaScript", "Programming", "Enterprise Software"]', startDate: new Date('2025-06-01'), applicationDeadline: new Date('2025-05-01'), isActive: true },
+        { companyId: createdCompanies[0].id, title: 'Data Analytics Intern', description: 'Work with data analytics teams to analyze business data, create insights, and support decision-making processes.', requirements: 'Engineering/Statistics background. Knowledge of SQL, Python, and data visualization tools.', benefits: 'Data science training, analytics certification, industry exposure', location: 'Bangalore', remote: true, duration: '6 months', stipend: '28000', skills: '["Data Analytics", "SQL", "Python", "Data Visualization", "Business Intelligence", "Statistics"]', startDate: new Date('2025-06-15'), applicationDeadline: new Date('2025-05-15'), isActive: true },
+        { companyId: createdCompanies[1].id, title: 'Product Management Intern', description: 'Support product managers in feature development, user research, and product strategy for enterprise software.', requirements: 'Engineering/MBA background. Product thinking, user research skills, analytical mindset.', benefits: 'Product management mentorship, PM certification, industry networking', location: 'Bangalore', remote: true, duration: '6 months', stipend: '30000', skills: '["Product Management", "User Research", "Product Strategy", "Analytics", "Agile", "Market Research"]', startDate: new Date('2025-07-01'), applicationDeadline: new Date('2025-06-01'), isActive: true },
+        { companyId: createdCompanies[3].id, title: 'Banking Operations Intern', description: 'Learn banking operations, customer service, and financial products in public sector banking environment.', requirements: 'Any graduate, finance/banking interest, customer service orientation.', benefits: 'Banking industry exposure, financial services training, PSU experience', location: 'Mumbai', remote: false, duration: '6 months', stipend: '22000', skills: '["Banking Operations", "Customer Service", "Financial Services", "Banking Products", "Operations Management", "Financial Analysis"]', startDate: new Date('2025-06-10'), applicationDeadline: new Date('2025-05-10'), isActive: true },
+        { companyId: createdCompanies[4].id, title: 'Digital Banking Intern', description: 'Work on digital banking initiatives, fintech solutions, and customer digital experience improvements.', requirements: 'Engineering/IT background, fintech interest, digital innovation mindset.', benefits: 'Digital banking exposure, fintech training, technology career path', location: 'Mumbai', remote: true, duration: '6 months', stipend: '26000', skills: '["Digital Banking", "Fintech", "Mobile Banking", "Digital Innovation", "Customer Experience", "Technology"]', startDate: new Date('2025-06-20'), applicationDeadline: new Date('2025-05-20'), isActive: true }
+      ];
+
+      let createdInternships = [];
+      for (const internship of internshipData) {
+        const created = await storage.createInternship(internship);
+        createdInternships.push(created);
+      }
+
+      console.log('✅ Database initialization completed!');
       res.json({ 
-        message: "Database initialization endpoint ready. Please run the SQL commands to populate data.",
-        status: "ready_for_sql_population",
-        instructions: "Use the SQL runner in your Replit deployment to run INSERT statements"
+        message: "Database successfully initialized!", 
+        companies: createdCompanies.length,
+        internships: createdInternships.length,
+        status: "populated"
       });
 
     } catch (error) {
       console.error("❌ Error initializing database:", error);
-      res.status(500).json({ error: "Failed to initialize database" });
+      res.status(500).json({ error: "Failed to initialize database", details: error instanceof Error ? error.message : String(error) });
     }
   });
 
