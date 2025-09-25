@@ -68,8 +68,8 @@ const InternshipSearch = () => {
         const response = await fetch(`/api/internships?${params.toString()}`);
         if (response.ok) {
           const data = await response.json();
-          // Show more internships to display more companies
-          setInternships(data.slice(0, 50));
+          // Show all internships so users can see all companies
+          setInternships(data);
         }
       } catch (error) {
         console.error('Error fetching internships:', error);

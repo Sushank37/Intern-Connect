@@ -68,12 +68,12 @@ const RecommendationsStep: React.FC<RecommendationsStepProps> = ({
   const calculateMatch = (internship: Internship): ScoredInternship => {
     let score = 0;
     const matchReasons: string[] = [];
-    const { preferences, personalDetails } = wizardData;
+    const { preferences, personal } = wizardData;
 
     // Debug logging
     console.log(`\n=== Matching ${internship.title} ===`);
     console.log('User skills:', preferences.skills);
-    console.log('User education:', personalDetails?.educationLevel);
+    console.log('User education:', personal?.educationLevel);
 
     // Skills overlap (40% weight - reduced to make room for education)
     const skillsScore = calculateSkillsMatch(internship, preferences.skills);
@@ -83,7 +83,7 @@ const RecommendationsStep: React.FC<RecommendationsStepProps> = ({
     }
 
     // Education level match (20% weight - new criteria)
-    const educationScore = calculateEducationMatch(internship, personalDetails?.educationLevel || '');
+    const educationScore = calculateEducationMatch(internship, personal?.educationLevel || '');
     score += educationScore * 0.2;
     if (educationScore > 0.5) {
       matchReasons.push('Education level match');
@@ -327,7 +327,7 @@ const RecommendationsStep: React.FC<RecommendationsStepProps> = ({
               if (b.postedAt !== a.postedAt) return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
               return a.id - b.id;
             })
-            .slice(0, 12); // Show more recommendations to display more companies
+            .slice(0, 15); // Show top 15 recommendations based on matching score
 
           console.log('Top recommendations:', scored.map(s => `${s.title} (${(s.score * 100).toFixed(1)}%)`));
           setRecommendations(scored);
