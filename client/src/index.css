@@ -76,12 +76,19 @@ canvas {
   @apply bg-purple-500;
 }
 
-/* Smooth animations */
-* {
+/* Smooth animations - exclude Radix components */
+*:not([data-radix-collection-item]):not([data-radix-select-content]):not([data-radix-dialog-content]) {
   transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, 
-              text-decoration-color 0.2s ease, fill 0.2s ease, stroke 0.2s ease, 
-              opacity 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, 
-              filter 0.2s ease, backdrop-filter 0.2s ease;
+              text-decoration-color 0.2s ease, fill 0.2s ease, stroke 0.2s ease;
+}
+
+/* Allow Radix components to use their own animations */
+[data-radix-select-content] {
+  transition: none !important;
+}
+
+[data-radix-dialog-content] {
+  transition: none !important;
 }
 
 /* Gradient text utilities */
