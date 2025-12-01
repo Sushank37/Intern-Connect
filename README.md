@@ -21,7 +21,7 @@ The system is designed to be **simple, mobile-friendly, and accessible** even fo
 ---
 
 ## 🧩 Tech Stack
-- **Frontend:** HTML, CSS, JavaScript (or React if used)  
+- **Frontend:** HTML, CSS, JavaScript, TypeScript  
 - **Backend:** Flask / Node.js / Django *(adjust based on your stack)*  
 - **AI Logic:** Python (rule-based or ML-light model)  
 - **Database:** SQLite / MySQL  
